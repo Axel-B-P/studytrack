@@ -28,3 +28,7 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+- Keep study calculations and validation in a browser-safe domain module so demo and authenticated views use identical rules.
+- Personal pages live beneath the managed client-only authentication layout; direct browser data access is scoped by database RLS.
+- Public home renders an isolated read-only example dashboard; example rows never enter a student's personal data automatically.
