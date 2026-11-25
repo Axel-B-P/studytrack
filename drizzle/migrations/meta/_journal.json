@@ -15,6 +15,13 @@
       "when": 1795470392728,
       "tag": "0001_restrict_profile_trigger",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795567854883,
+      "tag": "0002_study_plans",
+      "breakpoints": true
     }
   ]
 }

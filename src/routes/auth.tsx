@@ -103,6 +103,28 @@ function Auth() {
               placeholder="Al menos 8 caracteres"
             />
           </label>
+          {!register && (
+            <button
+              type="button"
+              className="text-xs text-primary hover:underline"
+              onClick={async (ev) => {
+                const form = (ev.currentTarget as HTMLButtonElement).form;
+                const email = String(new FormData(form!).get("email") ?? "").trim();
+                if (!z.string().email().safeParse(email).success) {
+                  setMessage("Escribí tu email arriba y volvé a tocar “¿Olvidaste tu contraseña?”.");
+                  return;
+                }
+                setBusy(true);
+                await supabase.auth.resetPasswordForEmail(email, {
+                  redirectTo: `${window.location.origin}/reset-password`,
+                });
+                setBusy(false);
+                setMessage("Si el email tiene una cuenta, te enviamos un enlace para crear una nueva contraseña.");
+              }}
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
+          )}
           {message && (
             <p role="status" className="rounded-md bg-accent p-3 text-sm">
               {message}

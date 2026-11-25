@@ -53,6 +53,54 @@ export type Database = {
           },
         ]
       }
+      plan_tasks: {
+        Row: {
+          completada: boolean
+          created_at: string
+          fecha: string
+          id: string
+          minutos: number
+          plan_id: string
+          titulo: string
+          user_id: string
+        }
+        Insert: {
+          completada?: boolean
+          created_at?: string
+          fecha: string
+          id?: string
+          minutos?: number
+          plan_id: string
+          titulo: string
+          user_id?: string
+        }
+        Update: {
+          completada?: boolean
+          created_at?: string
+          fecha?: string
+          id?: string
+          minutos?: number
+          plan_id?: string
+          titulo?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_tasks_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "study_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_tasks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -70,6 +118,54 @@ export type Database = {
           nombre?: string
         }
         Relationships: []
+      }
+      study_plans: {
+        Row: {
+          created_at: string
+          fecha_fin: string
+          fecha_inicio: string
+          id: string
+          objetivo: string | null
+          subject_id: string | null
+          titulo: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          fecha_fin: string
+          fecha_inicio: string
+          id?: string
+          objetivo?: string | null
+          subject_id?: string | null
+          titulo: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          fecha_fin?: string
+          fecha_inicio?: string
+          id?: string
+          objetivo?: string | null
+          subject_id?: string | null
+          titulo?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "study_plans_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "study_plans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       study_sessions: {
         Row: {

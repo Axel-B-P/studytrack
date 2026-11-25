@@ -26,7 +26,9 @@ import {
   Check,
   GraduationCap,
   ArrowRight,
+  ListChecks,
 } from "lucide-react";
+import { StudyPlans } from "./plans";
 import {
   BarChart,
   Bar,
@@ -69,7 +71,7 @@ import {
   type Session,
   type Exam,
 } from "@/lib/study";
-type Page = "dashboard" | "materias" | "sesiones" | "examenes" | "perfil";
+type Page = "dashboard" | "materias" | "sesiones" | "examenes" | "planes" | "perfil";
 type Modal =
   | { kind: "subject"; value?: Subject }
   | { kind: "session"; value?: Session }
@@ -80,6 +82,7 @@ const nav = [
   { page: "materias", path: "/materias", label: "Materias", icon: BookOpen },
   { page: "sesiones", path: "/sesiones", label: "Sesiones de estudio", icon: Timer },
   { page: "examenes", path: "/examenes", label: "Exámenes", icon: CalendarDays },
+  { page: "planes", path: "/planes", label: "Planes", icon: ListChecks },
   { page: "perfil", path: "/perfil", label: "Mi perfil", icon: UserRound },
 ] as const;
 const hours = (n: number) => new Intl.NumberFormat("es-AR", { maximumFractionDigits: 1 }).format(n);
@@ -306,7 +309,9 @@ function StudyApp({ data, page, demo = false }: { data: StudyData; page: Page; d
                       ? "Sesiones de estudio"
                       : page === "examenes"
                         ? "Mis exámenes"
-                        : "Mi perfil"}
+                        : page === "planes"
+                          ? "Planes de estudio"
+                          : "Mi perfil"}
                 {page === "dashboard" && <span className="ml-2 text-warm">☀</span>}
               </h1>
               <p className="mt-2 text-sm text-muted-foreground">
@@ -318,10 +323,12 @@ function StudyApp({ data, page, demo = false }: { data: StudyData; page: Page; d
                       ? "Tiempo de concentrarte en lo que importa."
                       : page === "examenes"
                         ? "Tus próximas fechas, sin perderlas de vista."
-                        : "Tu espacio, a tu manera."}
+                        : page === "planes"
+                          ? "Armá un plan, dividilo en tareas y seguí tu avance."
+                          : "Tu espacio, a tu manera."}
               </p>
             </div>
-            {page !== "perfil" && (
+            {page !== "perfil" && page !== "planes" && (
               <Button
                 onClick={() =>
                   open({
@@ -790,6 +797,7 @@ function StudyApp({ data, page, demo = false }: { data: StudyData; page: Page; d
               {!data.exams.length && <Empty text="Todavía no agregaste exámenes" />}
             </div>
           )}
+          {page === "planes" && <StudyPlans data={data} />}
           {page === "perfil" && <Profile data={data} signOut={signOut} />}
         </main>
       </div>
