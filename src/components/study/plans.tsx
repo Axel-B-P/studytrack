@@ -35,12 +35,12 @@ export function StudyPlans({ data }: { data: StudyData }) {
   async function savePlan(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const parsed = planSchema.safeParse(Object.fromEntries(new FormData(e.currentTarget)));
-    if (!parsed.success) return toast.error(parsed.error.issues[0]?.message ?? "Revisá los datos");
+    if (!parsed.success) { toast.error(parsed.error.issues[0]?.message ?? "Revisá los datos"); return; }
     const row = { ...parsed.data, subject_id: parsed.data.subject_id || null, objetivo: parsed.data.objetivo || null };
     const res = planModal?.value
       ? await supabase.from("study_plans").update(row).eq("id", planModal.value.id)
       : await supabase.from("study_plans").insert(row);
-    if (res.error) return toast.error("No pudimos guardar el plan");
+    if (res.error) { toast.error("No pudimos guardar el plan"); return; }
     toast.success("Plan guardado");
     setPlanModal(null);
     refresh();
@@ -48,9 +48,9 @@ export function StudyPlans({ data }: { data: StudyData }) {
   async function saveTask(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const parsed = taskSchema.safeParse(Object.fromEntries(new FormData(e.currentTarget)));
-    if (!parsed.success || !taskPlan) return toast.error("Revisá la tarea (mínimo 5 minutos)");
+    if (!parsed.success || !taskPlan) { toast.error("Revisá la tarea (mínimo 5 minutos)"); return; }
     const res = await supabase.from("plan_tasks").insert({ ...parsed.data, plan_id: taskPlan });
-    if (res.error) return toast.error("No pudimos agregar la tarea");
+    if (res.error) { toast.error("No pudimos agregar la tarea"); return; }
     setTaskPlan(null);
     refresh();
   }

@@ -24,12 +24,12 @@ function ResetPassword() {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
     const password = String(f.get("password"));
-    if (password.length < 8 || password.length > 128) return setMessage("Usá al menos 8 caracteres.");
-    if (password !== String(f.get("confirm"))) return setMessage("Las contraseñas no coinciden.");
+    if (password.length < 8 || password.length > 128) { setMessage("Usá al menos 8 caracteres."); return; }
+    if (password !== String(f.get("confirm"))) { setMessage("Las contraseñas no coinciden."); return; }
     setBusy(true);
     const { error } = await supabase.auth.updateUser({ password });
     setBusy(false);
-    if (error) return setMessage("No pudimos cambiarla. Probá una contraseña más segura o pedí un enlace nuevo.");
+    if (error) { setMessage("No pudimos cambiarla. Probá una contraseña más segura o pedí un enlace nuevo."); return; }
     await navigate({ to: "/dashboard" });
   }
   return (
