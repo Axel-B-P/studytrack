@@ -1,3 +1,4 @@
+import { AiCoach } from "./ai-coach";
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useQueryClient, useQuery } from "@tanstack/react-query";
@@ -753,6 +754,7 @@ function StudyApp({ data, page, demo = false }: { data: StudyData; page: Page; d
           {page === "sesiones" && (
             <>
               <StudyTimer data={data} />
+              {!demo && <AiCoach data={data} />}
               <SessionHistory
                 data={data}
                 edit={(s) => open({ kind: "session", value: s })}
