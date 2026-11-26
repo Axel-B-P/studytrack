@@ -87,6 +87,12 @@ const nav = [
   { page: "perfil", path: "/perfil", label: "Mi perfil", icon: UserRound },
 ] as const;
 const hours = (n: number) => new Intl.NumberFormat("es-AR", { maximumFractionDigits: 1 }).format(n);
+function duracionTexto(min: number) {
+  if (min < 60) return `${min} min`;
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return m ? `${h} h ${m} min` : `${h} h`;
+}
 export function PersonalApp({ page }: { page: Page }) {
   const { data } = useSuspenseQuery(studyOptions);
   return <StudyApp data={data} page={page} />;
@@ -803,6 +809,7 @@ function StudyApp({ data, page, demo = false }: { data: StudyData; page: Page; d
         </main>
       </div>
       <nav className="mobile-nav">{navigation(true)}</nav>
+      <SessionNoteDialog data={data} />
       <Dialog
         open={modal !== null}
         onOpenChange={(v) => {
@@ -944,34 +951,33 @@ function Empty({ text }: { text: string }) {
   );
 }
 function StudyTimer({ data }: { data: StudyData }) {
-  const queryClient = useQueryClient();
-  const { subject, setSubject, seconds, setSeconds, running, setRunning, setStart } =
-    useStudyTimer();
-  const [saving, setSaving] = useState(false);
-  async function finish() {
-    setRunning(false);
-    setSaving(true);
+  const {
+    subject,
+    setSubject,
+    seconds,
+    setSeconds,
+    running,
+    setRunning,
+    setStart,
+    setPending,
+  } = useStudyTimer();
+  function finish() {
+    const minutes = Math.max(1, Math.ceil(seconds / 60));
+    const fecha = dateKey(new Date());
     const payload = sessionSchema.safeParse({
       subject_id: subject,
-      fecha: dateKey(new Date()),
-      duracion_minutos: Math.max(1, Math.ceil(seconds / 60)),
+      fecha,
+      duracion_minutos: minutes,
       nota: "",
     });
     if (!payload.success) {
       toast.error("La sesión debe durar menos de 24 horas");
-      setSaving(false);
       return;
     }
-    const { error } = await supabase
-      .from("study_sessions")
-      .insert({ ...payload.data, user_id: data.userId });
-    if (error) toast.error("No se pudo guardar. Volvé a intentar.");
-    else {
-      await queryClient.invalidateQueries({ queryKey: studyOptions.queryKey });
-      setSeconds(0);
-      toast.success("¡Sesión guardada! Un paso más.");
-    }
-    setSaving(false);
+    setRunning(false);
+    setPending({ subjectId: subject, minutes, fecha });
+    setSeconds(0);
+    setStart(0);
   }
   return (
     <section className="panel mb-8 p-8 text-center">
@@ -1003,7 +1009,7 @@ function StudyTimer({ data }: { data: StudyData }) {
       </p>
       <div className="flex justify-center gap-3">
         <Button
-          disabled={!subject || saving}
+          disabled={!subject}
           onClick={() => {
             if (running) {
               setRunning(false);
@@ -1016,9 +1022,9 @@ function StudyTimer({ data }: { data: StudyData }) {
           {running ? <Pause /> : <Play />}
           {running ? "Pausar" : seconds ? "Continuar" : "Iniciar"}
         </Button>
-        <Button variant="outline" disabled={!seconds || saving} onClick={finish}>
+        <Button variant="outline" disabled={!seconds} onClick={finish}>
           <Square />
-          {saving ? "Guardando…" : "Finalizar"}
+          Finalizar
         </Button>
       </div>
       {(seconds > 0 || running) && (
@@ -1027,6 +1033,81 @@ function StudyTimer({ data }: { data: StudyData }) {
         </p>
       )}
     </section>
+  );
+}
+function SessionNoteDialog({ data }: { data: StudyData }) {
+  const queryClient = useQueryClient();
+  const { pending, setPending } = useStudyTimer();
+  const [nota, setNota] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  async function guardar(sinNota = false) {
+    if (!pending || saving) return;
+    const payload = sessionSchema.safeParse({
+      subject_id: pending.subjectId,
+      fecha: pending.fecha,
+      duracion_minutos: pending.minutes,
+      nota: sinNota ? "" : nota,
+    });
+    if (!payload.success) {
+      toast.error("La nota no puede superar los 1000 caracteres");
+      return;
+    }
+    setSaving(true);
+    const { error } = await supabase
+      .from("study_sessions")
+      .insert({ ...payload.data, user_id: data.userId });
+    setSaving(false);
+    if (error) {
+      toast.error("No se pudo guardar. Volvé a intentar.");
+      return;
+    }
+    await queryClient.invalidateQueries({ queryKey: studyOptions.queryKey });
+    setPending(null);
+    setNota("");
+    toast.success("¡Sesión guardada! Un paso más.");
+  }
+
+  if (!pending) return null;
+  const nombre = data.subjects.find((s) => s.id === pending.subjectId)?.nombre ?? "Materia";
+  return (
+    <Dialog
+      open
+      onOpenChange={(open) => {
+        if (!open) void guardar(true);
+      }}
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>¡Sesión terminada!</DialogTitle>
+          <DialogDescription>
+            Contá brevemente cómo te fue para poder recordarlo después.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm">
+          <span className="font-semibold">{nombre}</span>
+          <span className="text-muted-foreground"> · {duracionTexto(pending.minutes)}</span>
+        </div>
+        <label className="field">
+          Nota (opcional)
+          <textarea
+            autoFocus
+            value={nota}
+            maxLength={1000}
+            placeholder="Ej: entendí el tema 3, me falta practicar ejercicios."
+            onChange={(e) => setNota(e.target.value)}
+          />
+        </label>
+        <div className="flex justify-end gap-2">
+          <Button variant="outline" type="button" disabled={saving} onClick={() => guardar(true)}>
+            Guardar sin nota
+          </Button>
+          <Button type="button" disabled={saving} onClick={() => guardar(false)}>
+            {saving ? "Guardando…" : "Guardar"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 function SessionHistory({

@@ -54,4 +54,29 @@ describe("StudyTimerProvider", () => {
     expect(timer.running).toBe(true);
     expect(timer.start).toBe(Date.now() - 7000);
   });
+
+  it("conserva la sesión que espera una nota al cambiar de sección", () => {
+    const view = render(
+      <StudyTimerProvider>
+        <TimerProbe />
+      </StudyTimerProvider>,
+    );
+
+    act(() => {
+      timer.setPending({ subjectId: "materia-1", minutes: 42, fecha: "2026-11-26" });
+    });
+
+    view.rerender(
+      <StudyTimerProvider>
+        <span>Otra sección</span>
+      </StudyTimerProvider>,
+    );
+    view.rerender(
+      <StudyTimerProvider>
+        <TimerProbe />
+      </StudyTimerProvider>,
+    );
+
+    expect(timer.pending).toEqual({ subjectId: "materia-1", minutes: 42, fecha: "2026-11-26" });
+  });
 });

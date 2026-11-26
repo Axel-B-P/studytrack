@@ -8,6 +8,12 @@ import {
   type SetStateAction,
 } from "react";
 
+export type PendingSession = {
+  subjectId: string;
+  minutes: number;
+  fecha: string;
+};
+
 type StudyTimerState = {
   subject: string;
   setSubject: Dispatch<SetStateAction<string>>;
@@ -17,6 +23,8 @@ type StudyTimerState = {
   setRunning: Dispatch<SetStateAction<boolean>>;
   start: number;
   setStart: Dispatch<SetStateAction<number>>;
+  pending: PendingSession | null;
+  setPending: Dispatch<SetStateAction<PendingSession | null>>;
 };
 
 const StudyTimerContext = createContext<StudyTimerState | null>(null);
@@ -26,6 +34,7 @@ export function StudyTimerProvider({ children }: { children: ReactNode }) {
   const [seconds, setSeconds] = useState(0);
   const [running, setRunning] = useState(false);
   const [start, setStart] = useState(0);
+  const [pending, setPending] = useState<PendingSession | null>(null);
 
   useEffect(() => {
     if (!running) return;
@@ -44,6 +53,8 @@ export function StudyTimerProvider({ children }: { children: ReactNode }) {
         setRunning,
         start,
         setStart,
+        pending,
+        setPending,
       }}
     >
       {children}
