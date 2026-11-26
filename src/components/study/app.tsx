@@ -29,6 +29,7 @@ import {
   ListChecks,
 } from "lucide-react";
 import { StudyPlans } from "./plans";
+import { useStudyTimer } from "./timer-state";
 import {
   BarChart,
   Bar,
@@ -944,16 +945,9 @@ function Empty({ text }: { text: string }) {
 }
 function StudyTimer({ data }: { data: StudyData }) {
   const queryClient = useQueryClient();
-  const [subject, setSubject] = useState("");
-  const [seconds, setSeconds] = useState(0);
-  const [running, setRunning] = useState(false);
-  const [start, setStart] = useState(0);
+  const { subject, setSubject, seconds, setSeconds, running, setRunning, setStart } =
+    useStudyTimer();
   const [saving, setSaving] = useState(false);
-  useEffect(() => {
-    if (!running) return;
-    const id = setInterval(() => setSeconds(Math.floor((Date.now() - start) / 1000)), 250);
-    return () => clearInterval(id);
-  }, [running, start]);
   async function finish() {
     setRunning(false);
     setSaving(true);
@@ -1029,7 +1023,7 @@ function StudyTimer({ data }: { data: StudyData }) {
       </div>
       {(seconds > 0 || running) && (
         <p className="mt-4 text-xs text-muted-foreground">
-          Finalizá la sesión antes de salir de esta página.
+          Podés cambiar de sección: el tiempo va a seguir corriendo.
         </p>
       )}
     </section>
