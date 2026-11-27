@@ -19,6 +19,7 @@ import { Route as AuthenticatedMateriasRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
 import { Route as AuthenticatedPlanesRouteImport } from './routes/_authenticated/planes'
 import { Route as AuthenticatedSesionesRouteImport } from './routes/_authenticated/sesiones'
+import { Route as ApiPublicNotifierDataRouteImport } from './routes/api/public/notifier-data'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -69,6 +70,11 @@ const AuthenticatedSesionesRoute = AuthenticatedSesionesRouteImport.update({
   path: '/sesiones',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicNotifierDataRoute = ApiPublicNotifierDataRouteImport.update({
+  id: '/api/public/notifier-data',
+  path: '/api/public/notifier-data',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/perfil': typeof AuthenticatedPerfilRoute
   '/planes': typeof AuthenticatedPlanesRoute
   '/sesiones': typeof AuthenticatedSesionesRoute
+  '/api/public/notifier-data': typeof ApiPublicNotifierDataRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -91,6 +98,7 @@ export interface FileRoutesByTo {
   '/perfil': typeof AuthenticatedPerfilRoute
   '/planes': typeof AuthenticatedPlanesRoute
   '/sesiones': typeof AuthenticatedSesionesRoute
+  '/api/public/notifier-data': typeof ApiPublicNotifierDataRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -104,6 +112,7 @@ export interface FileRoutesById {
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/planes': typeof AuthenticatedPlanesRoute
   '/_authenticated/sesiones': typeof AuthenticatedSesionesRoute
+  '/api/public/notifier-data': typeof ApiPublicNotifierDataRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/planes'
     | '/sesiones'
+    | '/api/public/notifier-data'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/planes'
     | '/sesiones'
+    | '/api/public/notifier-data'
   id:
     | '__root__'
     | '/'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/_authenticated/perfil'
     | '/_authenticated/planes'
     | '/_authenticated/sesiones'
+    | '/api/public/notifier-data'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -147,6 +159,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiPublicNotifierDataRoute: typeof ApiPublicNotifierDataRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -221,6 +234,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSesionesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/notifier-data': {
+      id: '/api/public/notifier-data'
+      path: '/api/public/notifier-data'
+      fullPath: '/api/public/notifier-data'
+      preLoaderRoute: typeof ApiPublicNotifierDataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -250,6 +270,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiPublicNotifierDataRoute: ApiPublicNotifierDataRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
