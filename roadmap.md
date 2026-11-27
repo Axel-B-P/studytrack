@@ -4,3 +4,8 @@
 - [x] Crear materias, sesiones, cronómetro y exámenes.
 - [x] Completar dashboard, modo oscuro y navegación móvil.
 - [x] Verificar reglas de cálculo y flujo con una cuenta real.
+- [ ] Crear el proyecto destino en Supabase (pendiente del usuario).
+- [ ] Exportar una copia completa de la base y las cuentas actuales (pendiente del usuario).
+- [ ] Importar y verificar estructura, datos y accesos en el proyecto destino.
+- [ ] Conectar StudyTrack al proyecto externo y probar ingreso, lectura y escritura.
+- [ ] Quitar Lovable Cloud únicamente con confirmación, después de verificar la copia.
