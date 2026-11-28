@@ -31,5 +31,6 @@ use the editor.
 
 - Keep study calculations and validation in a browser-safe domain module so demo and authenticated views use identical rules.
 - Personal pages live beneath the managed client-only authentication layout; direct browser data access is scoped by database RLS.
+- Mount timer consumers, including the session-note dialog, only in personal views under the persistent authenticated timer provider; the public demo must not consume personal timer state.
 - Public home renders an isolated read-only example dashboard; example rows never enter a student's personal data automatically.
 - Endpoint notifier-data para GitHub Actions (requiere secret NOTIFIER_TOKEN).

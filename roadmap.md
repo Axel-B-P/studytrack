@@ -1,4 +1,5 @@
 # StudyTrack
+- [x] Corregir el alcance del cartel de notas y verificar inicio, páginas personales y persistencia del cronómetro.
 - [x] Activar cuentas y esquema con acceso privado por estudiante.
 - [x] Crear autenticación y perfil con nombre.
 - [x] Crear materias, sesiones, cronómetro y exámenes.

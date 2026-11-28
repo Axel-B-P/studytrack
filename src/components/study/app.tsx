@@ -96,7 +96,12 @@ function duracionTexto(min: number) {
 }
 export function PersonalApp({ page }: { page: Page }) {
   const { data } = useSuspenseQuery(studyOptions);
-  return <StudyApp data={data} page={page} />;
+  return (
+    <>
+      <StudyApp data={data} page={page} />
+      <SessionNoteDialog data={data} />
+    </>
+  );
 }
 export function DemoApp() {
   const [data] = useState(() => demoData());
@@ -811,7 +816,6 @@ function StudyApp({ data, page, demo = false }: { data: StudyData; page: Page; d
         </main>
       </div>
       <nav className="mobile-nav">{navigation(true)}</nav>
-      <SessionNoteDialog data={data} />
       <Dialog
         open={modal !== null}
         onOpenChange={(v) => {
